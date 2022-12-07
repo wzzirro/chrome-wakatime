@@ -2,6 +2,7 @@
 //jshint esnext:true
 
 var $ = require('jquery');
+var matchUrl = require('match-url-wildcard');
 var moment = require('moment');
 var config = require('./../config');
 
@@ -101,13 +102,12 @@ class WakaTimeCore {
                             }
 
                             if (items.loggingStyle == 'blacklist') {
-                                if (! contains(currentActiveTab.url, items.blacklist)) {
+                                if (!contains(currentActiveTab.url, items.blacklist)) {
                                     this.sendHeartbeat({
                                         url: currentActiveTab.url,
                                         project: null,
                                     }, debug);
-                                }
-                                else {
+                                } else {
                                     changeExtensionState('blacklisted');
                                     console.log(currentActiveTab.url + ' is on a blacklist.');
                                 }
@@ -115,10 +115,10 @@ class WakaTimeCore {
 
                             if (items.loggingStyle == 'whitelist') {
                                 var heartbeat = this.getHeartbeat(currentActiveTab.url, items.whitelist);
+                                console.log(heartbeat.url);
                                 if (heartbeat.url) {
                                     this.sendHeartbeat(heartbeat, debug);
-                                }
-                                else {
+                                } else {
                                     changeExtensionState('whitelisted');
                                     console.log(currentActiveTab.url + ' is not on a whitelist.');
                                 }
@@ -127,8 +127,7 @@ class WakaTimeCore {
                         });
                     }
                 });
-            }
-            else {
+            } else {
                 changeExtensionState('notLogging');
             }
         });
@@ -146,28 +145,27 @@ class WakaTimeCore {
     getHeartbeat(url, list) {
         var lines = list.split('\n');
 
-        for (var i = 0; i < lines.length; i ++) {
-            // Trim all lines from the list one by one
-            var cleanLine = lines[i].trim();
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            var cleanLine = line.trim();
 
-            // If by any chance one line in the list is empty, ignore it
-            if (cleanLine === '') {
-                continue;
-            }
+            if (cleanLine !== '') {
+                var rule = cleanLine.split('@@');
+                var ruleUrl = rule[0]
+                var ruleProject = rule[1]
 
-            // If url contains the current line return object
-            if (url.indexOf(cleanLine.split('@@')[0]) > -1) {
-                if (cleanLine.split('@@')[1]) {
-                    return {
-                        url: cleanLine.split('@@')[0],
-                        project: cleanLine.split('@@')[1]
-                    };
-                }
-                else {
-                    return {
-                        url: cleanLine.split('@@')[0],
-                        project: null,
-                    };
+                if (matchUrl(url, ruleUrl)) {
+                    if (ruleProject) {
+                        return {
+                            url: url,
+                            project: ruleProject
+                        };
+                    } else {
+                        return {
+                            url: ruleUrl,
+                            project: null,
+                        };
+                    }
                 }
             }
         }
@@ -198,25 +196,6 @@ class WakaTimeCore {
         });
     }
 
-
-    /**
-     * Returns a promise with logging type variable.
-     *
-     * @returns {*}
-     * @private
-     */
-    _getLoggingType() {
-        var deferredObject = $.Deferred();
-
-        browser.storage.sync.get({
-            loggingType: config.loggingType
-        }).then(function (items) {
-            deferredObject.resolve(items.loggingType);
-        });
-
-        return deferredObject.promise();
-    }
-
     /**
      * Given the heartbeat and logging type it creates a payload and
      * sends an ajax post request to the API.
@@ -227,22 +206,10 @@ class WakaTimeCore {
     sendHeartbeat(heartbeat, debug) {
         var payload = null;
 
-        this._getLoggingType().done((loggingType) => {
-            // Get only the domain from the entity.
-            // And send that in heartbeat
-            if (loggingType == 'domain') {
-                heartbeat.url = getDomainFromUrl(heartbeat.url);
-                payload = this._preparePayload(heartbeat, 'domain', debug);
-                console.log(payload);
-                this.sendAjaxRequestToApi(payload);
-            }
-            // Send entity in heartbeat
-            else if (loggingType == 'url') {
-                payload = this._preparePayload(heartbeat, 'url', debug);
-                console.log(payload);
-                this.sendAjaxRequestToApi(payload);
-            }
-        });
+        heartbeat.url = getDomainFromUrl(heartbeat.url);
+        payload = this._preparePayload(heartbeat, 'domain', debug);
+        console.log(payload);
+        this.sendAjaxRequestToApi(payload);
     }
 
     /**

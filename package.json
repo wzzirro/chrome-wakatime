@@ -50,6 +50,7 @@
     "classnames": "^2.2.5",
     "create-react-class": "^15.6.3",
     "jquery": "^3.0.0",
+    "match-url-wildcard": "0.0.4",
     "moment": "^2.13.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",

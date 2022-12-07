@@ -1,6 +1,11 @@
 
 History
 -------
+2.1.0 (2022-12-07)
+++++++++++++++++++
+
+- Add url validating by 'match-url-wildcard' lib.
+  `#134 <https://github.com/wakatime/chrome-wakatime/issues/134>`_
 
 
 2.0.1 (2021-01-11)

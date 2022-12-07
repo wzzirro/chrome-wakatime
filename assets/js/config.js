@@ -15,7 +15,6 @@ var config = {
     // or log only the white listed sites.
     loggingStyle: 'blacklist',
     // Default logging type
-    loggingType: 'domain',
     // By default logging is enabled
     loggingEnabled: true,
     // Url to which to send the heartbeat

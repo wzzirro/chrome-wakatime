@@ -23,7 +23,6 @@ var Options = reactCreateClass({
             theme: config.theme,
             blacklist: '',
             whitelist: '',
-            loggingType: config.loggingType,
             loggingStyle: config.loggingStyle,
             displayAlert: false,
             alertType: config.alert.success.type,
@@ -42,19 +41,16 @@ var Options = reactCreateClass({
             theme: config.theme,
             blacklist: '',
             whitelist: '',
-            loggingType: config.loggingType,
             loggingStyle: config.loggingStyle
         }).then(function (items) {
             that.setState({
                 theme: items.theme,
                 blacklist: items.blacklist,
                 whitelist: items.whitelist,
-                loggingType: items.loggingType,
                 loggingStyle: items.loggingStyle
             });
 
             that.refs.theme.value = items.theme;
-            that.refs.loggingType.value = items.loggingType;
             that.refs.loggingStyle.value = items.loggingStyle;
         });
     },
@@ -69,7 +65,6 @@ var Options = reactCreateClass({
         var that = this;
 
         var theme = this.refs.theme.value.trim();
-        var loggingType = this.refs.loggingType.value.trim();
         var loggingStyle = this.refs.loggingStyle.value.trim();
         // Trimming blacklist and whitelist removes blank lines and spaces.
         var blacklist = that.state.blacklist.trim();
@@ -80,7 +75,6 @@ var Options = reactCreateClass({
             theme: theme,
             blacklist: blacklist,
             whitelist: whitelist,
-            loggingType: loggingType,
             loggingStyle: loggingStyle
         }).then(function () {
             // Set state to be newly entered values.
@@ -88,7 +82,6 @@ var Options = reactCreateClass({
                 theme: theme,
                 blacklist: blacklist,
                 whitelist: whitelist,
-                loggingType: loggingType,
                 loggingStyle: loggingStyle,
                 displayAlert: true
             });
@@ -147,7 +140,7 @@ var Options = reactCreateClass({
                   handleChange={that._updateWhitelistState}
                   label="Whitelist"
                   sites={that.state.whitelist}
-                  placeholder="http://google.com&#10;http://myproject.com@@MyProject"
+                  placeholder="google.com&#10;*.myproject.com@@MyProject&#10;test.com/dev"
                   helpText="Sites that you want to show in your reports. You can assign URL to project by adding @@YourProject at the end of line." />
             );
 
@@ -177,16 +170,6 @@ var Options = reactCreateClass({
 
                             {loggingStyle()}
 
-                            <div className="form-group">
-                                <label className="col-lg-2 control-label">Logging type</label>
-
-                                <div className="col-lg-10">
-                                    <select className="form-control" ref="loggingType" defaultValue="domain">
-                                        <option value="domain">Only the domain</option>
-                                        <option value="url">Entire URL</option>
-                                    </select>
-                                </div>
-                            </div>
 
                             <div className="form-group">
                                 <label htmlFor="theme" className="col-lg-2 control-label">Theme</label>
