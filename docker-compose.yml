@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  chrome-wakatime.node:
+    image: node:11.15.0
+    restart: always
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - ~/.ssh:/home/node/.ssh:ro
+    ports:
+      - "8000:8000"
+    tty: true

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+if [[ ! -z "$@" ]]
+then bash ./exec -c "chrome-wakatime.node" "$@"
+else bash ./exec -c "chrome-wakatime.node" bash
+fi
